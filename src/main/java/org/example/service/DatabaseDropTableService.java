@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseDropTableService {
@@ -20,14 +19,14 @@ public class DatabaseDropTableService {
 
     public void dropTable(String tableName) {
         String dropTableSQL = "DROP TABLE IF EXISTS " + tableName + " CASCADE";
-        try (Connection connection = connectionManager.getConnection()) {
-            SQLExecutor executor = new SQLExecutor(connection);
+        try {
+            SQLExecutor executor = new SQLExecutor(connectionManager.getConnection());
             executor.executeSQL(dropTableSQL);
             logger.info("Table '{}' dropped successfully.", tableName);
-        } catch (SQLException e) {
-            logger.error("SQL error occurred while dropping table '{}': {}", tableName, e.getMessage(), e);
         } catch (Exception e) {
-            logger.error("Unexpected error occurred while dropping table '{}': {}", tableName, e.getMessage(), e);
+            logger.error("Failed to drop table '{}'", tableName, e);
+        } finally {
+            connectionManager.close();
         }
     }
 
