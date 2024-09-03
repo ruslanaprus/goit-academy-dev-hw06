@@ -14,5 +14,10 @@ public class DatabaseServiceFactory {
         return new DatabaseDropTableService(connectionManager);
     }
 
+    public static DatabasePopulateService createDatabasePopulateService(Database database) {
+        ConnectionManager connectionManager = new ConnectionManager(database);
+        return new DatabasePopulateService(connectionManager);
+    }
+
     //TODO Other services like DatabasePopulateService and DatabaseQueryService will be created similarly.
 }

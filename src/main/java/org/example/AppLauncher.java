@@ -4,9 +4,11 @@ import org.example.db.Database;
 import org.example.db.Postgresql;
 import org.example.service.DatabaseDropTableService;
 import org.example.service.DatabaseInitService;
+import org.example.service.DatabasePopulateService;
 import org.example.service.DatabaseServiceFactory;
 
-import static org.example.constants.Constants.SOURCE_FILE;
+import static org.example.constants.Constants.INIT_DB_SQL;
+import static org.example.constants.Constants.POPULATE_DB_SQL;
 
 public class AppLauncher {
     public static void main(String[] args) {
@@ -16,6 +18,10 @@ public class AppLauncher {
 //        dropTableService.dropAllTables();
 
         DatabaseInitService initService = DatabaseServiceFactory.createDatabaseInitService(postgresql);
-        initService.initializeDatabase(SOURCE_FILE);
+        initService.initializeDatabase(INIT_DB_SQL);
+
+        DatabasePopulateService populateService = DatabaseServiceFactory.createDatabasePopulateService(postgresql);
+        populateService.insertData(POPULATE_DB_SQL);
+
     }
 }
