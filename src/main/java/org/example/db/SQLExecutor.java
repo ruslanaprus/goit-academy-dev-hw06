@@ -3,13 +3,19 @@ package org.example.db;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-public class SQLExecutor {
+public class SQLExecutor implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(SQLExecutor.class);
     private final Connection connection;
 
@@ -65,9 +71,33 @@ public class SQLExecutor {
         }
     }
 
-    /**
-     * Close the connection.
-     */
+    // TODO wrap in Optional for potential null values
+    public <T> List<T> executeQuery(String sqlFilePath, String errorMessage, ResultSetMapper<T> mapper) {
+        List<T> result = new ArrayList<>();
+
+        Path path = Paths.get(sqlFilePath);
+        try {
+            String sql = new String(Files.readAllBytes(path));
+
+            try (Statement statement = connection.createStatement();
+                 ResultSet rs = statement.executeQuery(sql)) {
+                while (rs.next()) {
+                    result.add(mapper.map(rs));
+                }
+            }
+        } catch (SQLException | IOException e) {
+            logger.error(errorMessage, e);
+        }
+
+        return result;
+    }
+
+    @FunctionalInterface
+    public interface ResultSetMapper<T> {
+        T map(ResultSet rs) throws SQLException;
+    }
+
+    @Override
     public void close() {
         try {
             if (connection != null && !connection.isClosed()) {

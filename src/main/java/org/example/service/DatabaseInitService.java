@@ -25,12 +25,11 @@ public class DatabaseInitService {
         Path path = Paths.get(sqlFilePath);
         try {
             String sqlContent = new String(Files.readAllBytes(path));
-            SQLExecutor executor = new SQLExecutor(connectionManager.getConnection());
-            executor.executeBatch(sqlContent);
+            try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
+                executor.executeBatch(sqlContent);
+            }
         } catch (IOException e) {
             logger.error("Failed to read SQL file", e);
-        } finally {
-            connectionManager.close();
         }
     }
 }

@@ -2,8 +2,10 @@ package org.example;
 
 import org.example.db.Database;
 import org.example.db.Postgresql;
+import org.example.viewmodel.MaxProjectCountClient;
 import org.example.viewmodel.MaxSalaryWorker;
 import org.example.service.*;
+import org.example.viewmodel.ProjectPriceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,5 +36,24 @@ public class AppLauncher {
         for (MaxSalaryWorker worker : maxSalaryWorkers) {
             logger.info(worker.toString());
         }
+
+        DatabaseQueryService queryService1 = DatabaseServiceFactory.createDatabaseQueryService(postgresql);
+
+        List<MaxProjectCountClient> maxProjectCountClients = queryService1.findMaxProjectsClient(FIND_MAX_PROJECT_CLIENT_SQL);
+
+        logger.info("MaxProjectCountClient(s): {}", maxProjectCountClients.size());
+        for (MaxProjectCountClient client : maxProjectCountClients) {
+            logger.info(client.toString());
+        }
+
+        DatabaseQueryService queryService2 = DatabaseServiceFactory.createDatabaseQueryService(postgresql);
+
+        List<ProjectPriceInfo> projectPriceInfos = queryService2.printProjectPrices(PRINT_PROJECT_PRICES_SQL);
+
+        logger.info("ProjectPriceInfo(s): {}", projectPriceInfos.size());
+        for (ProjectPriceInfo info : projectPriceInfos) {
+            logger.info(info.toString());
+        }
+
     }
 }

@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class ConnectionManager {
+public class ConnectionManager implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(ConnectionManager.class);
     private Database database;
     private Connection connection;
@@ -23,6 +23,7 @@ public class ConnectionManager {
             this.connection = database.createDataSource(configLoader).getConnection();
         } catch (SQLException e) {
             logger.error("Failed to establish a database connection", e);
+            throw new RuntimeException("Failed to establish a database connection", e);
         }
     }
 
@@ -30,6 +31,7 @@ public class ConnectionManager {
         return this.connection;
     }
 
+    @Override
     public void close() {
         if (connection != null) {
             try {

@@ -2,22 +2,13 @@ package org.example.service;
 
 import org.example.db.ConnectionManager;
 import org.example.db.SQLExecutor;
+import org.example.viewmodel.MaxProjectCountClient;
 import org.example.viewmodel.MaxSalaryWorker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.example.viewmodel.ProjectPriceInfo;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class DatabaseQueryService {
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseQueryService.class);
     private final ConnectionManager connectionManager;
 
     public DatabaseQueryService(ConnectionManager connectionManager) {
@@ -25,29 +16,50 @@ public class DatabaseQueryService {
     }
 
     public List<MaxSalaryWorker> findMaxSalaryWorker(String sqlFilePath) {
-        Path path = Paths.get(sqlFilePath);
-        List<MaxSalaryWorker> workers = new ArrayList<>();
-        try {
-            String sqlContent = new String(Files.readAllBytes(path));
-            SQLExecutor executor = new SQLExecutor(connectionManager.getConnection());
-            Optional<ResultSet> resultSetOpt = executor.executeQuery(sqlContent);
+        String errorMessage = "Failed to execute findMaxSalaryWorker query";
 
-            if (resultSetOpt.isPresent()) {
-                try (ResultSet resultSet = resultSetOpt.get()) {
-                    while (resultSet.next()) {
-                        String name = resultSet.getString("name");
-                        int salary = resultSet.getInt("highest_salary");
-                        workers.add(new MaxSalaryWorker(name, salary));
+        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
+            return executor.executeQuery(
+                    sqlFilePath,
+                    errorMessage,
+                    rs -> {
+                        String name = rs.getString("name");
+                        int highestSalary = rs.getInt("highest_salary");
+                        return new MaxSalaryWorker(name, highestSalary);
                     }
-                }
-            } else {
-                logger.warn("No data found for max salary worker");
-            }
-        } catch (IOException | SQLException e) {
-            logger.error("Error occurred while querying max salary worker", e);
-        } finally {
-            connectionManager.close();
+            );
         }
-        return workers;
+    }
+
+    public List<MaxProjectCountClient> findMaxProjectsClient(String sqlFilePath) {
+        String errorMessage = "Failed to execute findMaxProjectsClient query";
+
+        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
+            return executor.executeQuery(
+                    sqlFilePath,
+                    errorMessage,
+                    rs -> {
+                        String client_name = rs.getString("client_name");
+                        int project_count = rs.getInt("project_count");
+                        return new MaxProjectCountClient(client_name, project_count);
+                    }
+            );
+        }
+    }
+
+    public List<ProjectPriceInfo> printProjectPrices(String sqlFilePath) {
+        String errorMessage = "Failed to execute printProjectPrices query";
+
+        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
+            return executor.executeQuery(
+                    sqlFilePath,
+                    errorMessage,
+                    rs -> {
+                        String project_name = rs.getString("project_name");
+                        int project_price = rs.getInt("project_price");
+                        return new ProjectPriceInfo(project_name, project_price);
+                    }
+            );
+        }
     }
 }
