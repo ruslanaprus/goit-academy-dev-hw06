@@ -21,7 +21,7 @@ public class DatabaseDropTableService {
         String dropTableSQL = "DROP TABLE IF EXISTS " + tableName + " CASCADE";
         try {
             SQLExecutor executor = new SQLExecutor(connectionManager.getConnection());
-            executor.executeSQL(dropTableSQL);
+            executor.executeUpdate(dropTableSQL);
             logger.info("Table '{}' dropped successfully.", tableName);
         } catch (Exception e) {
             logger.error("Failed to drop table '{}'", tableName, e);
@@ -52,7 +52,7 @@ public class DatabaseDropTableService {
         String dropTableSQL = "DROP TABLE IF EXISTS " + tableName + " CASCADE";
         try {
             SQLExecutor executor = new SQLExecutor(connection);
-            executor.executeSQL(dropTableSQL);
+            executor.executeUpdate(dropTableSQL);
             logger.info("Table '{}' dropped successfully.", tableName);
         } catch (Exception e) {
             logger.error("Failed to drop table '{}'", tableName, e);

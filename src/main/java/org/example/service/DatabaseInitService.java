@@ -18,12 +18,15 @@ public class DatabaseInitService {
         this.connectionManager = connectionManager;
     }
 
+    /**
+     * Initializes the database by executing SQL scripts to create tables.
+     */
     public void initializeDatabase(String sqlFilePath) {
         Path path = Paths.get(sqlFilePath);
         try {
             String sqlContent = new String(Files.readAllBytes(path));
             SQLExecutor executor = new SQLExecutor(connectionManager.getConnection());
-            executor.executeSQLBatch(sqlContent);
+            executor.executeBatch(sqlContent);
         } catch (IOException e) {
             logger.error("Failed to read SQL file", e);
         } finally {

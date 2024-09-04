@@ -18,12 +18,15 @@ public class DatabasePopulateService {
         this.connectionManager = connectionManager;
     }
 
+    /**
+     * Inserts data into the database by executing SQL scripts.
+     */
     public void insertData(String sqlFilePath) {
         Path path = Paths.get(sqlFilePath);
         try {
             String sqlContent = new String(Files.readAllBytes(path));
             SQLExecutor executor = new SQLExecutor(connectionManager.getConnection());
-            executor.executeSQLBatch(sqlContent);
+            executor.executeBatch(sqlContent);
         } catch (IOException e) {
             logger.error("Failed to read SQL file", e);
         } finally {

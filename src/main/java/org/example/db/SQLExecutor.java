@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -15,27 +16,39 @@ public class SQLExecutor {
         this.connection = connection;
     }
 
-    public void executeSQL(String sql) {
-        logger.info("Trying to execute SQL script...");
-
-        String[] sqlStatements = sql.split(";");
+    /**
+     * Executes SQL statements that modify the database (INSERT, UPDATE, DELETE, DDL).
+     */
+    public void executeUpdate(String sql) {
+        logger.info("Trying to execute SQL update...");
 
         try (Statement statement = connection.createStatement()) {
-            for (String sqlStatement : sqlStatements) {
-                sqlStatement = sqlStatement.trim();
-                if (!sqlStatement.isEmpty()) {
-                    logger.info("Executing SQL: {}", sqlStatement);
-                    statement.execute(sqlStatement);
-                }
-            }
-            logger.info("SQL script executed successfully");
+            statement.executeUpdate(sql);
+            logger.info("SQL update executed successfully");
         } catch (SQLException e) {
-            logger.error("Failed to execute SQL script", e);
+            logger.error("Failed to execute SQL update", e);
         }
     }
 
-    public void executeSQLBatch(String sql) {
-        logger.info("Trying to execute SQL script...");
+    /**
+     * Executes a SQL SELECT statement that returns data.
+     */
+    public ResultSet executeQuery(String sql) {
+        logger.info("Trying to execute SQL query...");
+
+        try (Statement statement = connection.createStatement()) {
+            return statement.executeQuery(sql);
+        } catch (SQLException e) {
+            logger.error("Failed to execute SQL query", e);
+            return null;
+        }
+    }
+
+    /**
+     * Executes multiple SQL statements as a batch.
+     */
+    public void executeBatch(String sql) {
+        logger.info("Trying to execute SQL batch...");
 
         String[] sqlStatements = sql.split(";");
 
@@ -47,11 +60,10 @@ public class SQLExecutor {
                     statement.addBatch(sqlStatement);
                 }
             }
-
             statement.executeBatch();
-            logger.info("SQL script executed successfully");
+            logger.info("SQL batch executed successfully");
         } catch (SQLException e) {
-            logger.error("Failed to execute SQL script", e);
+            logger.error("Failed to execute SQL batch", e);
         }
     }
 }
