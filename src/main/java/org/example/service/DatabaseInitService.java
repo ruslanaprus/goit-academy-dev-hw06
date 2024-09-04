@@ -23,7 +23,7 @@ public class DatabaseInitService {
         try {
             String sqlContent = new String(Files.readAllBytes(path));
             SQLExecutor executor = new SQLExecutor(connectionManager.getConnection());
-            executor.executeSQL(sqlContent);
+            executor.executeSQLBatch(sqlContent);
         } catch (IOException e) {
             logger.error("Failed to read SQL file", e);
         } finally {

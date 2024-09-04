@@ -16,11 +16,42 @@ public class SQLExecutor {
     }
 
     public void executeSQL(String sql) {
+        logger.info("Trying to execute SQL script...");
+
+        String[] sqlStatements = sql.split(";");
+
         try (Statement statement = connection.createStatement()) {
-            statement.execute(sql);
-            logger.info("SQL executed successfully");
+            for (String sqlStatement : sqlStatements) {
+                sqlStatement = sqlStatement.trim();
+                if (!sqlStatement.isEmpty()) {
+                    logger.info("Executing SQL: {}", sqlStatement);
+                    statement.execute(sqlStatement);
+                }
+            }
+            logger.info("SQL script executed successfully");
         } catch (SQLException e) {
-            logger.error("Failed to execute SQL", e);
+            logger.error("Failed to execute SQL script", e);
+        }
+    }
+
+    public void executeSQLBatch(String sql) {
+        logger.info("Trying to execute SQL script...");
+
+        String[] sqlStatements = sql.split(";");
+
+        try (Statement statement = connection.createStatement()) {
+            for (String sqlStatement : sqlStatements) {
+                sqlStatement = sqlStatement.trim();
+                if (!sqlStatement.isEmpty()) {
+                    logger.info("Adding to batch: {}", sqlStatement);
+                    statement.addBatch(sqlStatement);
+                }
+            }
+
+            statement.executeBatch();
+            logger.info("SQL script executed successfully");
+        } catch (SQLException e) {
+            logger.error("Failed to execute SQL script", e);
         }
     }
 }

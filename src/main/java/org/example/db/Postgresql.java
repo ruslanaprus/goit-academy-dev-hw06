@@ -11,8 +11,8 @@ public class Postgresql implements Database {
     public DataSource createDataSource(ConfigLoader configLoader) {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(configLoader.getDbUrl());
-        config.setUsername(configLoader.getDbUser());
-        config.setPassword(configLoader.getDbPassword());
+        if (configLoader.getDbUser() != null) { config.setUsername(configLoader.getDbUser()); }
+        if (configLoader.getDbPassword() != null) { config.setPassword(configLoader.getDbPassword()); }
 
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
