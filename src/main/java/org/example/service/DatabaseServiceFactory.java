@@ -19,5 +19,8 @@ public class DatabaseServiceFactory {
         return new DatabasePopulateService(connectionManager);
     }
 
-    //TODO Other services like DatabasePopulateService and DatabaseQueryService will be created similarly.
+    public static DatabaseQueryService createDatabaseQueryService(Database database) {
+        ConnectionManager connectionManager = new ConnectionManager(database);
+        return new DatabaseQueryService(connectionManager);
+    }
 }

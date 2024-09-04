@@ -2,20 +2,23 @@ package org.example;
 
 import org.example.db.Database;
 import org.example.db.Postgresql;
-import org.example.service.DatabaseDropTableService;
-import org.example.service.DatabaseInitService;
-import org.example.service.DatabasePopulateService;
-import org.example.service.DatabaseServiceFactory;
+import org.example.viewmodel.MaxSalaryWorker;
+import org.example.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static org.example.constants.Constants.INIT_DB_SQL;
-import static org.example.constants.Constants.POPULATE_DB_SQL;
+import java.util.List;
+
+import static org.example.constants.Constants.*;
 
 public class AppLauncher {
+    private static final Logger logger = LoggerFactory.getLogger(AppLauncher.class);
+
     public static void main(String[] args) {
         Database postgresql = new Postgresql();
 
-//        DatabaseDropTableService dropTableService = DatabaseServiceFactory.createDatabaseDropTableService(postgresql);
-//        dropTableService.dropAllTables();
+        DatabaseDropTableService dropTableService = DatabaseServiceFactory.createDatabaseDropTableService(postgresql);
+        dropTableService.dropAllTables();
 
         DatabaseInitService initService = DatabaseServiceFactory.createDatabaseInitService(postgresql);
         initService.initializeDatabase(INIT_DB_SQL);
@@ -23,5 +26,13 @@ public class AppLauncher {
         DatabasePopulateService populateService = DatabaseServiceFactory.createDatabasePopulateService(postgresql);
         populateService.insertData(POPULATE_DB_SQL);
 
+        DatabaseQueryService queryService = DatabaseServiceFactory.createDatabaseQueryService(postgresql);
+
+        List<MaxSalaryWorker> maxSalaryWorkers = queryService.findMaxSalaryWorker(FIND_MAX_SALARY_WORKER_SQL);
+
+        logger.info("MaxSalaryWorker(s): {}", maxSalaryWorkers.size());
+        for (MaxSalaryWorker worker : maxSalaryWorkers) {
+            logger.info(worker.toString());
+        }
     }
 }
