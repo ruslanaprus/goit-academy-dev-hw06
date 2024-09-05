@@ -3,7 +3,7 @@
 CREATE TABLE worker (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name TEXT NOT NULL CHECK (length(name) BETWEEN 2 AND 1000),
-	birthday TEXT NOT NULL,
+    birthday TEXT NOT NULL CHECK (birthday >= '1901-01-01'),
 	level TEXT NOT NULL CHECK (level IN ('Trainee', 'Junior', 'Middle', 'Senior')),
 	salary INTEGER NOT NULL CHECK (salary BETWEEN 100 AND 100000)
 );
