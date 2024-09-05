@@ -4,41 +4,42 @@ import org.example.config.ConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class ConnectionManager implements AutoCloseable {
+public class ConnectionManager {
     private static final Logger logger = LoggerFactory.getLogger(ConnectionManager.class);
-    private Database database;
-    private Connection connection;
+    private static ConnectionManager instance;
+    private DataSource dataSource;
 
-    public ConnectionManager(Database database) {
-        this.database = database;
-        initDataSource();
+    private ConnectionManager(Database database) {
+        initDataSource(database);
     }
 
-    private void initDataSource() {
+    public static synchronized ConnectionManager getInstance(Database database) {
+        if (instance == null) {
+            instance = new ConnectionManager(database);
+        }
+        return instance;
+    }
+
+    private void initDataSource(Database database) {
         try {
             ConfigLoader configLoader = new ConfigLoader();
-            this.connection = database.createDataSource(configLoader).getConnection();
-        } catch (SQLException e) {
-            logger.error("Failed to establish a database connection", e);
-            throw new RuntimeException("Failed to establish a database connection", e);
+            this.dataSource = database.createDataSource(configLoader);
+        } catch (Exception e) {
+            logger.error("Failed to initialize DataSource: {}", e.getMessage());
+            throw new IllegalStateException("DataSource is not initialized. Ensure initDataSource() was successful.");
         }
     }
 
     public Connection getConnection() {
-        return this.connection;
-    }
-
-    @Override
-    public void close() {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                logger.error("Failed to close database connection", e);
-            }
+        try {
+            return dataSource.getConnection();
+        } catch (SQLException e) {
+            logger.error("Failed to obtain database connection: {}", e.getMessage());
+            throw new IllegalStateException("Database connection is unavailable. Please contact support.");
         }
     }
 }

@@ -60,7 +60,7 @@ public class DatabaseQueryService {
     }
 
     public Optional<List<LongestProject>> findLongestProject (String sqlFilePath) {
-        String errorMessage = "Failed to execute printProjectPrices query";
+        String errorMessage = "Failed to execute findLongestProject query";
 
         try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
             return executor.executeQuery(
@@ -75,7 +75,7 @@ public class DatabaseQueryService {
     }
 
     public Optional<List<YoungestEldestWorker>> findYoungestEldestWorker (String sqlFilePath) {
-        String errorMessage = "Failed to execute printProjectPrices query";
+        String errorMessage = "Failed to execute findYoungestEldestWorker query";
 
         try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
             return executor.executeQuery(

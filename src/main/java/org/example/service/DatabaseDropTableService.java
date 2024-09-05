@@ -17,19 +17,6 @@ public class DatabaseDropTableService {
         this.connectionManager = connectionManager;
     }
 
-    public void dropTable(String tableName) {
-        String dropTableSQL = "DROP TABLE IF EXISTS " + tableName + " CASCADE";
-        try {
-            SQLExecutor executor = new SQLExecutor(connectionManager.getConnection());
-            executor.executeUpdate(dropTableSQL);
-            logger.info("Table '{}' dropped successfully.", tableName);
-        } catch (Exception e) {
-            logger.error("Failed to drop table '{}'", tableName, e);
-        } finally {
-            connectionManager.close();
-        }
-    }
-
     public void dropAllTables() {
         try (Connection connection = connectionManager.getConnection();
              Statement statement = connection.createStatement()) {
@@ -42,9 +29,7 @@ public class DatabaseDropTableService {
                 dropTable(connection, tableName);
             }
         } catch (Exception e) {
-            logger.error("Failed to drop all tables", e);
-        } finally {
-            connectionManager.close();
+            logger.error("Failed to drop all tables {}", e.getMessage());
         }
     }
 
@@ -55,7 +40,7 @@ public class DatabaseDropTableService {
             executor.executeUpdate(dropTableSQL);
             logger.info("Table '{}' dropped successfully.", tableName);
         } catch (Exception e) {
-            logger.error("Failed to drop table '{}'", tableName, e);
+            logger.error("Failed to drop table '{}': {}", tableName, e.getMessage());
         }
     }
 }
