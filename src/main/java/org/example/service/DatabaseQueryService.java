@@ -23,11 +23,10 @@ public class DatabaseQueryService {
             return executor.executeQuery(
                     sqlFilePath,
                     errorMessage,
-                    rs -> {
-                        String name = rs.getString("name");
-                        int highestSalary = rs.getInt("highest_salary");
-                        return new MaxSalaryWorker(name, highestSalary);
-                    }
+                    rs -> new MaxSalaryWorker(
+                            rs.getString("name"),
+                            rs.getInt("highest_salary")
+                    )
             );
         }
     }
@@ -39,11 +38,10 @@ public class DatabaseQueryService {
             return executor.executeQuery(
                     sqlFilePath,
                     errorMessage,
-                    rs -> {
-                        String client_name = rs.getString("client_name");
-                        int project_count = rs.getInt("project_count");
-                        return new MaxProjectCountClient(client_name, project_count);
-                    }
+                    rs -> new MaxProjectCountClient(
+                            rs.getString("client_name"),
+                            rs.getInt("project_count")
+                    )
             );
         }
     }
@@ -55,11 +53,10 @@ public class DatabaseQueryService {
             return executor.executeQuery(
                     sqlFilePath,
                     errorMessage,
-                    rs -> {
-                        String project_name = rs.getString("project_name");
-                        int project_price = rs.getInt("project_price");
-                        return new ProjectPriceInfo(project_name, project_price);
-                    }
+                    rs -> new ProjectPriceInfo(
+                            rs.getString("project_name"),
+                            rs.getInt("project_price")
+                    )
             );
         }
     }
