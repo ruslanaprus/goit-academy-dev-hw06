@@ -2,6 +2,7 @@ package org.example.service;
 
 import org.example.db.ConnectionManager;
 import org.example.db.SQLExecutor;
+import org.example.viewmodel.LongestProject;
 import org.example.viewmodel.MaxProjectCountClient;
 import org.example.viewmodel.MaxSalaryWorker;
 import org.example.viewmodel.ProjectPriceInfo;
@@ -56,6 +57,21 @@ public class DatabaseQueryService {
                     rs -> new ProjectPriceInfo(
                             rs.getString("project_name"),
                             rs.getInt("project_price")
+                    )
+            );
+        }
+    }
+
+    public Optional<List<LongestProject>> findLongestProject (String sqlFilePath) {
+        String errorMessage = "Failed to execute printProjectPrices query";
+
+        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
+            return executor.executeQuery(
+                    sqlFilePath,
+                    errorMessage,
+                    rs -> new LongestProject(
+                            rs.getString("name"),
+                            rs.getInt("duration_in_months")
                     )
             );
         }

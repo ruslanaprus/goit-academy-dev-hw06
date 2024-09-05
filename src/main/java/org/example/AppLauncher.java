@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.db.Database;
 import org.example.db.Postgresql;
+import org.example.viewmodel.LongestProject;
 import org.example.viewmodel.MaxProjectCountClient;
 import org.example.viewmodel.MaxSalaryWorker;
 import org.example.service.*;
@@ -62,6 +63,17 @@ public class AppLauncher {
                     }
                 },
                 () -> logger.warn("No ProjectPriceInfo(s) found.")
+        );
+
+        Optional<List<LongestProject>> longestProjects = queryService.findLongestProject(FIND_LONGEST_PROJECT_SQL);
+        longestProjects.ifPresentOrElse(
+                projects -> {
+                    logger.info("LongestProject(s) found: {}", projects.size());
+                    for (LongestProject project : projects) {
+                        logger.info(project.toString());
+                    }
+                },
+                () -> logger.warn("No project(s) found.")
         );
     }
 }
