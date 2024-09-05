@@ -1,6 +1,6 @@
 package org.example.db;
 
-import org.example.util.ConfigLoader;
+import org.example.config.ConfigLoader;
 
 import javax.sql.DataSource;
 

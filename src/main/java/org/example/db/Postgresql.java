@@ -2,7 +2,7 @@ package org.example.db;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.example.util.ConfigLoader;
+import org.example.config.ConfigLoader;
 
 import javax.sql.DataSource;
 

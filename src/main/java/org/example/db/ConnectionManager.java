@@ -1,6 +1,6 @@
 package org.example.db;
 
-import org.example.util.ConfigLoader;
+import org.example.config.ConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

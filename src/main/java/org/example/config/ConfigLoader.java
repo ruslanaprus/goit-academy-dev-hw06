@@ -1,4 +1,4 @@
-package org.example.util;
+package org.example.config;
 
 import org.apache.commons.text.StringSubstitutor;
 import org.slf4j.Logger;
