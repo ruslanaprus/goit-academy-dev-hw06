@@ -7,6 +7,7 @@ import org.example.viewmodel.MaxSalaryWorker;
 import org.example.viewmodel.ProjectPriceInfo;
 
 import java.util.List;
+import java.util.Optional;
 
 public class DatabaseQueryService {
     private final ConnectionManager connectionManager;
@@ -15,7 +16,7 @@ public class DatabaseQueryService {
         this.connectionManager = connectionManager;
     }
 
-    public List<MaxSalaryWorker> findMaxSalaryWorker(String sqlFilePath) {
+    public Optional<List<MaxSalaryWorker>> findMaxSalaryWorker(String sqlFilePath) {
         String errorMessage = "Failed to execute findMaxSalaryWorker query";
 
         try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
@@ -31,7 +32,7 @@ public class DatabaseQueryService {
         }
     }
 
-    public List<MaxProjectCountClient> findMaxProjectsClient(String sqlFilePath) {
+    public Optional<List<MaxProjectCountClient>> findMaxProjectsClient(String sqlFilePath) {
         String errorMessage = "Failed to execute findMaxProjectsClient query";
 
         try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
@@ -47,7 +48,7 @@ public class DatabaseQueryService {
         }
     }
 
-    public List<ProjectPriceInfo> printProjectPrices(String sqlFilePath) {
+    public Optional<List<ProjectPriceInfo>> printProjectPrices(String sqlFilePath) {
         String errorMessage = "Failed to execute printProjectPrices query";
 
         try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {

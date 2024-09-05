@@ -71,8 +71,7 @@ public class SQLExecutor implements AutoCloseable {
         }
     }
 
-    // TODO wrap in Optional for potential null values
-    public <T> List<T> executeQuery(String sqlFilePath, String errorMessage, ResultSetMapper<T> mapper) {
+    public <T> Optional<List<T>> executeQuery(String sqlFilePath, String errorMessage, ResultSetMapper<T> mapper) {
         List<T> result = new ArrayList<>();
 
         Path path = Paths.get(sqlFilePath);
@@ -81,6 +80,9 @@ public class SQLExecutor implements AutoCloseable {
 
             try (Statement statement = connection.createStatement();
                  ResultSet rs = statement.executeQuery(sql)) {
+                if (!rs.isBeforeFirst()) {
+                    return Optional.empty();
+                }
                 while (rs.next()) {
                     result.add(mapper.map(rs));
                 }
@@ -89,7 +91,7 @@ public class SQLExecutor implements AutoCloseable {
             logger.error(errorMessage, e);
         }
 
-        return result;
+        return Optional.of(result);
     }
 
     @FunctionalInterface

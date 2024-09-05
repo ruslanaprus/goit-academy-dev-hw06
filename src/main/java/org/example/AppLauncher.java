@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.example.constants.Constants.*;
 
@@ -30,30 +31,37 @@ public class AppLauncher {
 
         DatabaseQueryService queryService = DatabaseServiceFactory.createDatabaseQueryService(postgresql);
 
-        List<MaxSalaryWorker> maxSalaryWorkers = queryService.findMaxSalaryWorker(FIND_MAX_SALARY_WORKER_SQL);
+        Optional<List<MaxSalaryWorker>> maxSalaryWorkers = queryService.findMaxSalaryWorker(FIND_MAX_SALARY_WORKER_SQL);
+        maxSalaryWorkers.ifPresentOrElse(
+                workers -> {
+                    logger.info("MaxSalaryWorker(s) found: {}", workers.size());
+                    for (MaxSalaryWorker worker : workers) {
+                        logger.info(worker.toString());
+                    }
+                },
+                () -> logger.warn("No MaxSalaryWorker(s) found.")
+        );
 
-        logger.info("MaxSalaryWorker(s): {}", maxSalaryWorkers.size());
-        for (MaxSalaryWorker worker : maxSalaryWorkers) {
-            logger.info(worker.toString());
-        }
+        Optional<List<MaxProjectCountClient>> maxProjectCountClients = queryService.findMaxProjectsClient(FIND_MAX_PROJECT_CLIENT_SQL);
+        maxProjectCountClients.ifPresentOrElse(
+                clients -> {
+                    logger.info("MaxProjectCountClient(s) found: {}", clients.size());
+                    for (MaxProjectCountClient client : clients) {
+                        logger.info(client.toString());
+                    }
+                },
+                () -> logger.warn("No MaxProjectCountClient(s) found.")
+        );
 
-        DatabaseQueryService queryService1 = DatabaseServiceFactory.createDatabaseQueryService(postgresql);
-
-        List<MaxProjectCountClient> maxProjectCountClients = queryService1.findMaxProjectsClient(FIND_MAX_PROJECT_CLIENT_SQL);
-
-        logger.info("MaxProjectCountClient(s): {}", maxProjectCountClients.size());
-        for (MaxProjectCountClient client : maxProjectCountClients) {
-            logger.info(client.toString());
-        }
-
-        DatabaseQueryService queryService2 = DatabaseServiceFactory.createDatabaseQueryService(postgresql);
-
-        List<ProjectPriceInfo> projectPriceInfos = queryService2.printProjectPrices(PRINT_PROJECT_PRICES_SQL);
-
-        logger.info("ProjectPriceInfo(s): {}", projectPriceInfos.size());
-        for (ProjectPriceInfo info : projectPriceInfos) {
-            logger.info(info.toString());
-        }
-
+        Optional<List<ProjectPriceInfo>> projectPriceInfos = queryService.printProjectPrices(PRINT_PROJECT_PRICES_SQL);
+        projectPriceInfos.ifPresentOrElse(
+                infos -> {
+                    logger.info("ProjectPriceInfo(s) found: {}", infos.size());
+                    for (ProjectPriceInfo info : infos) {
+                        logger.info(info.toString());
+                    }
+                },
+                () -> logger.warn("No ProjectPriceInfo(s) found.")
+        );
     }
 }
