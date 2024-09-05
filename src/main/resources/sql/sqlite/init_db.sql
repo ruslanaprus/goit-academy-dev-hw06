@@ -8,19 +8,6 @@ CREATE TABLE worker (
 	salary INTEGER NOT NULL CHECK (salary BETWEEN 100 AND 100000)
 );
 
--- Trigger to enforce the birthday year check
-CREATE TRIGGER check_birthday_year
-BEFORE INSERT ON worker
-FOR EACH ROW
-BEGIN
-    -- Ensure the birth year is between 1901 and the current year
-    SELECT CASE
-        WHEN strftime('%Y', NEW.birthday) < '1901' OR strftime('%Y', NEW.birthday) > strftime('%Y', 'now')
-        THEN RAISE(ABORT, 'Birthday year must be between 1901 and the current year.')
-    END;
-END;
-
-
 CREATE TABLE client (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name TEXT NOT NULL CHECK (length(name) BETWEEN 2 AND 1000)
