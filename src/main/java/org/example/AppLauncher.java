@@ -2,11 +2,8 @@ package org.example;
 
 import org.example.db.Database;
 import org.example.db.Postgresql;
-import org.example.viewmodel.LongestProject;
-import org.example.viewmodel.MaxProjectCountClient;
-import org.example.viewmodel.MaxSalaryWorker;
+import org.example.viewmodel.*;
 import org.example.service.*;
-import org.example.viewmodel.ProjectPriceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +71,17 @@ public class AppLauncher {
                     }
                 },
                 () -> logger.warn("No project(s) found.")
+        );
+
+        Optional<List<YoungestEldestWorker>> youngestEldestWorkers = queryService.findYoungestEldestWorker(FIND_YOUNGEST_ELDEST_SQL);
+        youngestEldestWorkers.ifPresentOrElse(
+                workers -> {
+                    logger.info("YoungestEldestWorker(s) found: {}", workers.size());
+                    for (YoungestEldestWorker worker : workers) {
+                        logger.info(worker.toString());
+                    }
+                },
+                () -> logger.warn("No worker(s) found.")
         );
     }
 }
