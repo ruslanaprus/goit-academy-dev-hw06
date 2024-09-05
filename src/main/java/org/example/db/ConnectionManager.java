@@ -29,7 +29,7 @@ public class ConnectionManager {
             ConfigLoader configLoader = new ConfigLoader();
             this.dataSource = database.createDataSource(configLoader);
         } catch (Exception e) {
-            logger.error("Failed to initialize DataSource: {}", e.getMessage());
+            logger.error("Failed to initialize DataSource", e);
             throw new IllegalStateException("DataSource is not initialized. Ensure initDataSource() was successful.");
         }
     }
@@ -38,7 +38,7 @@ public class ConnectionManager {
         try {
             return dataSource.getConnection();
         } catch (SQLException e) {
-            logger.error("Failed to obtain database connection: {}", e.getMessage());
+            logger.error("Failed to obtain database connection", e);
             throw new IllegalStateException("Database connection is unavailable. Please contact support.");
         }
     }
