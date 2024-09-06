@@ -6,6 +6,10 @@ import org.example.db.SQLExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -18,6 +22,16 @@ public class DatabaseDropTableService {
     public DatabaseDropTableService(ConnectionManager connectionManager, MetricRegistry metricRegistry) {
         this.connectionManager = connectionManager;
         this.metricRegistry = metricRegistry;
+    }
+
+    public void dropAllTables(String sqlFilePath) {
+        Path path = Paths.get(sqlFilePath);
+        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection(), metricRegistry)) {
+            String sqlContent = new String(Files.readAllBytes(path));
+            executor.executeBatch(sqlContent);
+        } catch (IOException e) {
+            logger.error("Failed to read SQL file: {}", e.getMessage());
+        }
     }
 
     public void dropAllTables() {

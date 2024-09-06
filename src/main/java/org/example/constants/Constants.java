@@ -17,4 +17,5 @@ public class Constants {
     public static final String FIND_MAX_PROJECT_CLIENT_SQLITE = "src/main/resources/sql/sqlite/find_max_projects_client.sql";
     public static final String FIND_YOUNGEST_ELDEST_SQLITE = "src/main/resources/sql/sqlite/find_youngest_eldest_workers.sql";
     public static final String PRINT_PROJECT_PRICES_SQLITE = "src/main/resources/sql/sqlite/print_project_prices.sql";
+    public static final String DROP_TABLES_SQLITE = "src/main/resources/sql/sqlite/drop_tables.sql";
 }

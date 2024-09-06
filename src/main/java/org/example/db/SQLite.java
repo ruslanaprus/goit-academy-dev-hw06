@@ -1,5 +1,6 @@
 package org.example.db;
 
+import com.codahale.metrics.MetricRegistry;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.example.config.ConfigLoader;
@@ -15,9 +16,11 @@ import java.sql.Statement;
 public class SQLite implements Database {
     private static final Logger logger = LoggerFactory.getLogger(SQLite.class);
     private final String fileName;
+    private final MetricRegistry metricRegistry;
 
-    public SQLite(String fileName) {
+    public SQLite(String fileName, MetricRegistry metricRegistry) {
         this.fileName = fileName;
+        this.metricRegistry = metricRegistry;
         createNewDatabase();
     }
 
@@ -26,6 +29,8 @@ public class SQLite implements Database {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.sqlite.JDBC");
         config.setJdbcUrl(configLoader.getDbUrl());
+
+        config.setMetricRegistry(this.metricRegistry);
 
         config.setConnectionTimeout(20_000);
         config.setIdleTimeout(300_000);
