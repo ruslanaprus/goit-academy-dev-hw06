@@ -23,9 +23,8 @@ public class DatabasePopulateService {
      */
     public void insertData(String sqlFilePath) {
         Path path = Paths.get(sqlFilePath);
-        try {
+        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
             String sqlContent = new String(Files.readAllBytes(path));
-            SQLExecutor executor = new SQLExecutor(connectionManager.getConnection());
             executor.executeBatch(sqlContent);
         } catch (IOException e) {
             logger.error("Failed to read SQL file: {}", e.getMessage());
