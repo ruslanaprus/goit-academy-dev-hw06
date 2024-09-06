@@ -1,5 +1,6 @@
 package org.example.db;
 
+import com.codahale.metrics.MetricRegistry;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.example.config.ConfigLoader;
@@ -7,6 +8,12 @@ import org.example.config.ConfigLoader;
 import javax.sql.DataSource;
 
 public class Postgresql implements Database {
+    private final MetricRegistry metricRegistry;
+
+    public Postgresql(MetricRegistry metricRegistry) {
+        this.metricRegistry = metricRegistry;
+    }
+
     @Override
     public DataSource createDataSource(ConfigLoader configLoader) {
         HikariConfig config = new HikariConfig();
@@ -17,6 +24,8 @@ public class Postgresql implements Database {
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+        config.setMetricRegistry(this.metricRegistry);
 
         config.setConnectionTimeout(20_000);
         config.setIdleTimeout(300_000);

@@ -1,8 +1,10 @@
 package org.example;
 
+import com.codahale.metrics.MetricRegistry;
 import org.example.db.ConnectionManager;
 import org.example.db.Database;
 import org.example.db.Postgresql;
+import org.example.log.MetricsLogger;
 import org.example.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +15,11 @@ public class AppLauncher {
     private static final Logger logger = LoggerFactory.getLogger(AppLauncher.class);
 
     public static void main(String[] args) {
-        Database postgresql = new Postgresql();
-        ConnectionManager connectionManager = ConnectionManager.getInstance(postgresql);
+        MetricRegistry metricRegistry = new MetricRegistry();
+        MetricsLogger.startLogging(metricRegistry);
+
+        Database postgresql = new Postgresql(metricRegistry);
+        ConnectionManager connectionManager = ConnectionManager.getInstance(postgresql, metricRegistry);
 
         DatabaseDropTableService dropTableService = DatabaseServiceFactory.createDatabaseDropTableService(connectionManager);
         dropTableService.dropAllTables();

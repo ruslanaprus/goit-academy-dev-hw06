@@ -1,5 +1,6 @@
 package org.example.db;
 
+import com.codahale.metrics.MetricRegistry;
 import org.example.config.ConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,18 +14,18 @@ public class ConnectionManager {
     private static ConnectionManager instance;
     private DataSource dataSource;
 
-    private ConnectionManager(Database database) {
-        initDataSource(database);
+    private ConnectionManager(Database database, MetricRegistry metricRegistry) {
+        initDataSource(database, metricRegistry);
     }
 
-    public static synchronized ConnectionManager getInstance(Database database) {
+    public static synchronized ConnectionManager getInstance(Database database, MetricRegistry metricRegistry) {
         if (instance == null) {
-            instance = new ConnectionManager(database);
+            instance = new ConnectionManager(database, metricRegistry);
         }
         return instance;
     }
 
-    private void initDataSource(Database database) {
+    private void initDataSource(Database database, MetricRegistry metricRegistry) {
         try {
             ConfigLoader configLoader = new ConfigLoader();
             this.dataSource = database.createDataSource(configLoader);
