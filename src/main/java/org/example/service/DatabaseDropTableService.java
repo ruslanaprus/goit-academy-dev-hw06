@@ -1,5 +1,6 @@
 package org.example.service;
 
+import com.codahale.metrics.MetricRegistry;
 import org.example.db.ConnectionManager;
 import org.example.db.SQLExecutor;
 import org.slf4j.Logger;
@@ -12,9 +13,11 @@ import java.sql.Statement;
 public class DatabaseDropTableService {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseDropTableService.class);
     private final ConnectionManager connectionManager;
+    private final MetricRegistry metricRegistry;
 
-    public DatabaseDropTableService(ConnectionManager connectionManager) {
+    public DatabaseDropTableService(ConnectionManager connectionManager, MetricRegistry metricRegistry) {
         this.connectionManager = connectionManager;
+        this.metricRegistry = metricRegistry;
     }
 
     public void dropAllTables() {
@@ -36,7 +39,7 @@ public class DatabaseDropTableService {
     private void dropTable(Connection connection, String tableName) {
         String dropTableSQL = "DROP TABLE IF EXISTS " + tableName + " CASCADE";
         try {
-            SQLExecutor executor = new SQLExecutor(connection);
+            SQLExecutor executor = new SQLExecutor(connection, metricRegistry);
             executor.executeUpdate(dropTableSQL);
             logger.info("Table '{}' dropped successfully.", tableName);
         } catch (Exception e) {

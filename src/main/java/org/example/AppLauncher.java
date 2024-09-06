@@ -21,16 +21,16 @@ public class AppLauncher {
         Database postgresql = new Postgresql(metricRegistry);
         ConnectionManager connectionManager = ConnectionManager.getInstance(postgresql, metricRegistry);
 
-        DatabaseDropTableService dropTableService = DatabaseServiceFactory.createDatabaseDropTableService(connectionManager);
+        DatabaseDropTableService dropTableService = DatabaseServiceFactory.createDatabaseDropTableService(connectionManager, metricRegistry);
         dropTableService.dropAllTables();
 
-        DatabaseInitService initService = DatabaseServiceFactory.createDatabaseInitService(connectionManager);
+        DatabaseInitService initService = DatabaseServiceFactory.createDatabaseInitService(connectionManager, metricRegistry);
         initService.initializeDatabase(INIT_DB_SQL);
 
-        DatabasePopulateService populateService = DatabaseServiceFactory.createDatabasePopulateService(connectionManager);
+        DatabasePopulateService populateService = DatabaseServiceFactory.createDatabasePopulateService(connectionManager, metricRegistry);
         populateService.insertData(POPULATE_DB_SQL);
 
-        DatabaseQueryService queryService = DatabaseServiceFactory.createDatabaseQueryService(connectionManager);
+        DatabaseQueryService queryService = DatabaseServiceFactory.createDatabaseQueryService(connectionManager, metricRegistry);
         queryService.findMaxSalaryWorker(FIND_MAX_SALARY_WORKER_SQL).ifPresent(workers -> {
             logger.info("MaxSalaryWorker(s) found: {}", workers.size());
             workers.forEach(worker -> logger.info(worker.toString()));

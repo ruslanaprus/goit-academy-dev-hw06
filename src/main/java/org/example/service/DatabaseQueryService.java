@@ -1,5 +1,6 @@
 package org.example.service;
 
+import com.codahale.metrics.MetricRegistry;
 import org.example.db.ConnectionManager;
 import org.example.db.SQLExecutor;
 import org.example.viewmodel.*;
@@ -11,15 +12,17 @@ import java.util.Optional;
 
 public class DatabaseQueryService {
     private final ConnectionManager connectionManager;
+    private final MetricRegistry metricRegistry;
 
-    public DatabaseQueryService(ConnectionManager connectionManager) {
+    public DatabaseQueryService(ConnectionManager connectionManager, MetricRegistry metricRegistry) {
         this.connectionManager = connectionManager;
+        this.metricRegistry = metricRegistry;
     }
 
     public Optional<List<MaxSalaryWorker>> findMaxSalaryWorker(String sqlFilePath) {
         String errorMessage = "Failed to execute findMaxSalaryWorker query";
 
-        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
+        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection(), metricRegistry)) {
             return executor.executeQuery(
                     sqlFilePath,
                     errorMessage,
@@ -34,7 +37,7 @@ public class DatabaseQueryService {
     public Optional<List<MaxProjectCountClient>> findMaxProjectsClient(String sqlFilePath) {
         String errorMessage = "Failed to execute findMaxProjectsClient query";
 
-        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
+        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection(), metricRegistry)) {
             return executor.executeQuery(
                     sqlFilePath,
                     errorMessage,
@@ -49,7 +52,7 @@ public class DatabaseQueryService {
     public Optional<List<ProjectPriceInfo>> printProjectPrices(String sqlFilePath) {
         String errorMessage = "Failed to execute printProjectPrices query";
 
-        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
+        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection(), metricRegistry)) {
             return executor.executeQuery(
                     sqlFilePath,
                     errorMessage,
@@ -64,7 +67,7 @@ public class DatabaseQueryService {
     public Optional<List<LongestProject>> findLongestProject (String sqlFilePath) {
         String errorMessage = "Failed to execute findLongestProject query";
 
-        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
+        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection(), metricRegistry)) {
             return executor.executeQuery(
                     sqlFilePath,
                     errorMessage,
@@ -81,7 +84,7 @@ public class DatabaseQueryService {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
+        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection(), metricRegistry)) {
             return executor.executeQuery(
                     sqlFilePath,
                     errorMessage,

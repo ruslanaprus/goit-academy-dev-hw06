@@ -18,6 +18,6 @@ public class MetricsLogger {
                 .build();
 
         // Schedule the logging to occur
-        reporter.start(500, TimeUnit.MILLISECONDS);
+        reporter.start(200, TimeUnit.MILLISECONDS);
     }
 }

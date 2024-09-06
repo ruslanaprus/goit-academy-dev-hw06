@@ -1,5 +1,6 @@
 package org.example.service;
 
+import com.codahale.metrics.MetricRegistry;
 import org.example.db.ConnectionManager;
 import org.example.db.SQLExecutor;
 import org.slf4j.Logger;
@@ -13,9 +14,11 @@ import java.nio.file.Paths;
 public class DatabasePopulateService {
     private static final Logger logger = LoggerFactory.getLogger(DatabasePopulateService.class);
     private final ConnectionManager connectionManager;
+    private final MetricRegistry metricRegistry;
 
-    public DatabasePopulateService(ConnectionManager connectionManager) {
+    public DatabasePopulateService(ConnectionManager connectionManager, MetricRegistry metricRegistry) {
         this.connectionManager = connectionManager;
+        this.metricRegistry = metricRegistry;
     }
 
     /**
@@ -23,7 +26,7 @@ public class DatabasePopulateService {
      */
     public void insertData(String sqlFilePath) {
         Path path = Paths.get(sqlFilePath);
-        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection())) {
+        try (SQLExecutor executor = new SQLExecutor(connectionManager.getConnection(), metricRegistry)) {
             String sqlContent = new String(Files.readAllBytes(path));
             executor.executeBatch(sqlContent);
         } catch (IOException e) {

@@ -18,20 +18,20 @@
     </appender>
 
     <!-- Define the metrics appender -->
-    <appender name="METRICS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/metrics.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- Daily rollover -->
-            <fileNamePattern>logs/metrics.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
+<!--    <appender name="METRICS" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+<!--        <file>logs/metrics.log</file>-->
+<!--        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+<!--            &lt;!&ndash; Daily rollover &ndash;&gt;-->
+<!--            <fileNamePattern>logs/metrics.%d{yyyy-MM-dd}.log</fileNamePattern>-->
+<!--            <maxHistory>30</maxHistory>-->
+<!--        </rollingPolicy>-->
+<!--        <encoder>-->
+<!--            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
+<!--        </encoder>-->
+<!--    </appender>-->
 
     <logger name="metrics" level="INFO" additivity="false">
-        <appender-ref ref="METRICS" />
+        <appender-ref ref="FILE" />
     </logger>
 
     <!-- Root logger configuration -->

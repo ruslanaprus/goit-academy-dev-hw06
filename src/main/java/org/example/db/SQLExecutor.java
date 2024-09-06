@@ -1,5 +1,7 @@
 package org.example.db;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,9 +20,11 @@ import java.util.Optional;
 public class SQLExecutor implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(SQLExecutor.class);
     private final Connection connection;
+    private final MetricRegistry metricRegistry;
 
-    public SQLExecutor(Connection connection) {
+    public SQLExecutor(Connection connection, MetricRegistry metricRegistry) {
         this.connection = connection;
+        this.metricRegistry = metricRegistry;
     }
 
     /**
@@ -28,12 +32,15 @@ public class SQLExecutor implements AutoCloseable {
      */
     public void executeUpdate(String sql) {
         logger.info("Executing SQL update...");
+        Timer.Context context = metricRegistry.timer("sql-update-timer").time();
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
             logger.info("SQL update executed successfully");
         } catch (SQLException e) {
             logger.error("Failed to execute SQL update", e);
             throw new RuntimeException("SQL update execution failed", e);
+        } finally {
+            context.stop();
         }
     }
 
@@ -42,12 +49,15 @@ public class SQLExecutor implements AutoCloseable {
      */
     public Optional<ResultSet> executeQuery(String sql) {
         logger.info("Executing SQL query...");
+        Timer.Context context = metricRegistry.timer("sql-query-timer").time();
         try {
             Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             return Optional.of(statement.executeQuery(sql));
         } catch (SQLException e) {
             logger.error("Failed to execute SQL query", e);
             return Optional.empty();
+        } finally {
+            context.stop();
         }
     }
 
@@ -56,6 +66,7 @@ public class SQLExecutor implements AutoCloseable {
      */
     public void executeBatch(String sql) {
         logger.info("Executing SQL batch...");
+        Timer.Context context = metricRegistry.timer("sql-batch-query-timer").time();
         String[] sqlStatements = sql.split(";");
         try (Statement statement = connection.createStatement()) {
             for (String sqlStatement : sqlStatements) {
@@ -68,6 +79,8 @@ public class SQLExecutor implements AutoCloseable {
         } catch (SQLException e) {
             logger.error("Failed to execute SQL batch", e);
             throw new RuntimeException("SQL batch execution failed", e);
+        } finally {
+            context.stop();
         }
     }
 
@@ -75,6 +88,7 @@ public class SQLExecutor implements AutoCloseable {
         List<T> result = new ArrayList<>();
 
         Path path = Paths.get(sqlFilePath);
+        Timer.Context context = metricRegistry.timer("sql-query-timer").time();
         try {
             String sql = new String(Files.readAllBytes(path));
 
@@ -89,6 +103,8 @@ public class SQLExecutor implements AutoCloseable {
             }
         } catch (SQLException | IOException e) {
             logger.error(errorMessage, e);
+        } finally {
+            context.stop();
         }
 
         return Optional.of(result);
