@@ -36,7 +36,7 @@ VALUES
 ('Paw Prints & Paintbrushes', 3, '2018-01-01', '2022-02-28'),
 ('Meowsterpiece Gallery', 4, '2023-07-01', '2023-08-31'),
 ('Fur-tastic Finds', 4, '2023-03-01', '2023-09-30'),
-('Cat-astrophic Cuteness', 1, '2015-07-01', '2023-11-01')
+('Cat-astrophic Cuteness', 1, '2015-07-01', '2023-10-31')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO project_worker (project_id, worker_id)

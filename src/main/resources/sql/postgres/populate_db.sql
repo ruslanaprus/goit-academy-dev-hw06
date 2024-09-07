@@ -47,7 +47,7 @@ VALUES
 -- Project 10: 7 months duration
 ('Fur-tastic Finds', 4, '2023-03-01', '2023-09-30'),
 -- Project 4: 101 months duration
-('Cat-astrophic Cuteness', 1, '2015-07-01', '2023-11-01')
+('Cat-astrophic Cuteness', 1, '2015-07-01', '2023-10-31')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO project_worker (project_id, worker_id) VALUES
