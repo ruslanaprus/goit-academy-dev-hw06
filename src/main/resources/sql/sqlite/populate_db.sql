@@ -1,18 +1,19 @@
 -- Task 2
 
-INSERT INTO worker (name, birthday, level, salary)
-VALUES 
-('Alice', '2001-08-20', 'Senior', 100000),
-('Bob', '1995-10-11', 'Middle', 20000),
-('Eve', '2000-01-01', 'Senior', 32000),
-('Whiskers', '2015-06-01', 'Trainee', 10000),
-('Purrito', '2020-03-21', 'Junior', 15000),
-('Pawsters', '2021-01-30', 'Trainee', 950),
-('Meowiarty', '2021-01-30', 'Senior', 29000),
-('Purrlock', '2011-07-12', 'Middle', 22000),
-('Clawster', '2019-04-01', 'Middle', 22000),
-('Buttercup', '2020-09-27', 'Middle', 32000),
-('ET', '1901-01-01', 'Senior', 100000);
+INSERT INTO worker (name, birthday, email, level, salary)
+VALUES
+('Alice', '2001-08-20', 'alice@example.com','Senior', 100000),
+('Bob', '1995-10-11', 'bob@example.com','Middle', 20000),
+('Eve', '2000-01-01', 'eve@example.com','Senior', 32000),
+('Whiskers', '2015-06-01', 'whiskers@example.com','Trainee', 10000),
+('Purrito', '2020-03-21', 'purrito@example.com','Junior', 15000),
+('Pawsters', '2021-01-30', 'pawsters@example.com','Trainee', 950),
+('Meowiarty', '2021-01-30', 'meowiarty@example.com','Senior', 29000),
+('Purrlock', '2011-07-12', 'purrlock@example.com','Middle', 22000),
+('Clawster', '2019-04-01', 'clawster@example.com','Middle', 22000),
+('Buttercup', '2020-09-27', 'buttercup@example.com','Middle', 32000),
+('ET', '1901-01-01', 'et@example.com','Senior', 100000)
+ON CONFLICT DO NOTHING;
 
 INSERT INTO client (name)
 VALUES 
@@ -20,7 +21,8 @@ VALUES
 ('Purrfect Solutions'),
 ('Meowster Inc.'),
 ('Clawtastic Creations'),
-('Snack Caterprises');
+('Snack Caterprises')
+ON CONFLICT DO NOTHING;
 
 INSERT INTO project (name, client_id, start_date, finish_date)
 VALUES
@@ -34,7 +36,8 @@ VALUES
 ('Paw Prints & Paintbrushes', 3, '2018-01-01', '2022-02-28'),
 ('Meowsterpiece Gallery', 4, '2023-07-01', '2023-08-31'),
 ('Fur-tastic Finds', 4, '2023-03-01', '2023-09-30'),
-('Cat-astrophic Cuteness', 1, '2015-07-01', '2023-11-01');
+('Cat-astrophic Cuteness', 1, '2015-07-01', '2023-11-01')
+ON CONFLICT DO NOTHING;
 
 INSERT INTO project_worker (project_id, worker_id)
 VALUES
@@ -47,4 +50,5 @@ VALUES
 (7, 3), (7, 6),
 (8, 8), (8, 9),
 (9, 10), (9, 11),
-(10, 1), (10, 3), (10, 5);
+(10, 1), (10, 3), (10, 5)
+ON CONFLICT DO NOTHING;
