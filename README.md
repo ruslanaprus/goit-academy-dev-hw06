@@ -11,7 +11,7 @@ The project is organised into multiple components that handle various responsibi
 
 - **`AppLauncher`**: The main class that orchestrates database initialisation, data insertion, and query execution.
 - **`Database` (Interface)**: Defines the contract for creating data sources for different database systems (e.g., PostgreSQL, SQLite).
-- **`ConnectionManager`**: Manages database connections and ensures efficient connection pooling and security.
+- **`ConnectionManager`**: Manages database connections and ensures efficient connection pooling.
 - **`ConfigLoader`**: Loads and resolves configuration properties for database credentials.
 - **`SQLExecutor`**: Executes SQL statements and queries while tracking execution time through the `MetricsLogger`.
 - **`MetricsLogger`**: Monitors database metrics such as connection times and query execution performance using Codahale Metrics.
@@ -35,7 +35,7 @@ SQL statements are stored in external files located in `src/main/resources/sql/{
 
 - `init.sql`: Initialises the database schema.
 - `populate.sql`: Populates the database with data.
-- `query.sql`: Contains various query scripts.
+- `{query}.sql`: various files that contain various query scripts.
 
 This approach allows you to:
 
@@ -46,7 +46,7 @@ To add a new query to the `DatabaseQueryService` and display its results in the 
 - Create a new `.sql` file and save it in the appropriate directory (`sql/postgres/` or `sql/sqlite/` depending on the database type).
 - In the `DatabaseQueryService` class, add a new method to handle this query. The method should be similar to the existing ones, following the pattern of passing the SQL file path and mapping the result set to a Java object.
 - In the `Constants` class, define a constant for the new SQL file path.
-- In the `AppLauncher`, you need to generate the SQL file path and call the new method within `runDatabaseOperations`.
+- In the `AppLauncher`, you need to compose the SQL file path and call the new method within `runDatabaseOperations`.
 ### 2. Connection Management
 
 Connections to the database are managed by the `ConnectionManager` class, which uses a connection pooling mechanism via HikariCP to efficiently handle multiple concurrent database requests while keeping the application performance optimal. The `ConnectionManager` is a **singleton** to ensure that only one instance manages the pool, reducing overhead and improving efficiency.
@@ -68,7 +68,7 @@ The `ConfigLoader` loads database credentials from both environment variables an
 
 #### Configuration Setup
 
-The file `config.properties` contains the configuration for both PostgreSQL and SQLite databases. You can set database credentials and URLs in this file:
+The file `config.properties` contains the configuration for both PostgreSQL and SQLite databases. This file points to credentials stored securely elsewhere.
 
 ```properties
 # Postgres Database Configurations
@@ -83,7 +83,7 @@ sqlite.db.password=
 
 ```
 
-- **Environment Variable Support**: The configuration supports placeholders that can be replaced by environment variables, making it easy to configure for different environments.
+- **Environment Variable Support**: The configuration uses placeholders that are replaced by environment variables, making it easy to configure for different environments.
 
 ### 5. Switching Between Databases
 
@@ -91,7 +91,7 @@ The app can easily switch between different database types (e.g., PostgreSQL, SQ
 
 To switch between databases:
 
-1. Make sure you have correct database credentials in `config.properties`.
+1. Make sure you have correct database credentials in your environment variables as [defined](#configuration-setup) in `config.properties`.
 2. Update the `DatabaseType` in `AppLauncher` to either `POSTGRES` or `SQLITE`.
 
 For example, to use SQLite, update the `DatabaseType` to `SQLITE`:
@@ -142,14 +142,6 @@ Edit `config.properties` with your database URL, username, and password for the 
 postgres.db.url=${POSTGRES_DB_URL}
 postgres.db.user=${POSTGRES_DB_USER}
 postgres.db.password=${POSTGRES_DB_PASS}
-```
-
-alternatively, set the credentials directly in a `properties` file:
-
-```properties
-postgres.db.url=jdbc:postgresql://localhost:5432/mydatabase
-postgres.db.user=myuser
-postgres.db.password=mypassword
 ```
 
 3. **Build the Application**: Use gradle or your preferred build tool to build the application:
