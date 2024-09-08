@@ -1,6 +1,7 @@
 package org.example;
 
 import com.codahale.metrics.MetricRegistry;
+import org.example.constants.DatabaseType;
 import org.example.db.ConnectionManager;
 import org.example.db.Database;
 import org.example.db.Postgresql;
@@ -19,80 +20,66 @@ public class AppLauncher {
         MetricRegistry metricRegistry = new MetricRegistry();
         MetricsLogger.startLogging(metricRegistry);
 
-        Database sqlite = new SQLite(BOB_SQLITE_PATH, metricRegistry);
-        ConnectionManager connectionManager = ConnectionManager.getInstance(sqlite, metricRegistry);
+        // SQLite database setup
+        runDatabaseOperations(DatabaseType.SQLITE, metricRegistry);
 
-        DatabaseDropTableService dropTableService = DatabaseServiceFactory.createDatabaseDropTableService(connectionManager, metricRegistry);
-        dropTableService.dropAllTables(DROP_TABLES_SQLITE);
+        // Postgres database setup
+        runDatabaseOperations(DatabaseType.POSTGRES, metricRegistry);
+    }
 
+    private static void runDatabaseOperations(DatabaseType dbType, MetricRegistry metricRegistry) {
+        Database database;
+        String initSql, populateSql, maxSalarySql, maxProjectClientSql, projectPricesSql, longestProjectSql, youngestEldestSql;
+
+        database = switch (dbType) {
+            case SQLITE -> new SQLite(SQLITE_DB_PATH, metricRegistry);
+            case POSTGRES -> new Postgresql(metricRegistry);
+        };
+
+        ConnectionManager connectionManager = ConnectionManager.getInstance(database, metricRegistry);
+
+        // Generate SQL file paths based on the database type
+        initSql = getSqlFilePath(dbType, INIT_DB_SQL);
+        populateSql = getSqlFilePath(dbType, POPULATE_DB_SQL);
+        maxSalarySql = getSqlFilePath(dbType, FIND_MAX_SALARY_WORKER_SQL);
+        maxProjectClientSql = getSqlFilePath(dbType, FIND_MAX_PROJECT_CLIENT_SQL);
+        projectPricesSql = getSqlFilePath(dbType, PRINT_PROJECT_PRICES_SQL);
+        longestProjectSql = getSqlFilePath(dbType, FIND_LONGEST_PROJECT_SQL);
+        youngestEldestSql = getSqlFilePath(dbType, FIND_YOUNGEST_ELDEST_SQL);
+
+        // Initialize and populate the database
         DatabaseInitService initService = DatabaseServiceFactory.createDatabaseInitService(connectionManager, metricRegistry);
-        initService.initializeDatabase(INIT_DB_SQLITE);
+        initService.initializeDatabase(initSql);
 
         DatabasePopulateService populateService = DatabaseServiceFactory.createDatabasePopulateService(connectionManager, metricRegistry);
-        populateService.insertData(POPULATE_DB_SQLITE);
+        populateService.insertData(populateSql);
 
+        // Query operations
         DatabaseQueryService queryService = DatabaseServiceFactory.createDatabaseQueryService(connectionManager, metricRegistry);
-        queryService.findMaxSalaryWorker(FIND_MAX_SALARY_WORKER_SQLITE).ifPresent(workers -> {
+
+        queryService.findMaxSalaryWorker(maxSalarySql).ifPresent(workers -> {
             logger.info("MaxSalaryWorker(s) found: {}", workers.size());
             workers.forEach(worker -> logger.info(worker.toString()));
         });
 
-        queryService.findMaxProjectsClient(FIND_MAX_PROJECT_CLIENT_SQLITE).ifPresent(clients -> {
+        queryService.findMaxProjectsClient(maxProjectClientSql).ifPresent(clients -> {
             logger.info("MaxProjectCountClient(s) found: {}", clients.size());
             clients.forEach(client -> logger.info(client.toString()));
         });
 
-        queryService.printProjectPrices(PRINT_PROJECT_PRICES_SQLITE).ifPresent(projects -> {
+        queryService.printProjectPrices(projectPricesSql).ifPresent(projects -> {
             logger.info("ProjectPriceInfo(s) found: {}", projects.size());
             projects.forEach(project -> logger.info(project.toString()));
         });
 
-        queryService.findLongestProject(FIND_LONGEST_PROJECT_SQLITE).ifPresent(projects -> {
+        queryService.findLongestProject(longestProjectSql).ifPresent(projects -> {
             logger.info("LongestProject(s) found: {}", projects.size());
             projects.forEach(project -> logger.info(project.toString()));
         });
 
-        queryService.findYoungestEldestWorker(FIND_YOUNGEST_ELDEST_SQLITE).ifPresent(workers -> {
+        queryService.findYoungestEldestWorker(youngestEldestSql).ifPresent(workers -> {
             logger.info("YoungestEldestWorker(s) found: {}", workers.size());
             workers.forEach(worker -> logger.info(worker.toString()));
         });
-
-//        Database postgresql = new Postgresql(metricRegistry);
-//        ConnectionManager connectionManager = ConnectionManager.getInstance(postgresql, metricRegistry);
-//
-//        DatabaseDropTableService dropTableService = DatabaseServiceFactory.createDatabaseDropTableService(connectionManager, metricRegistry);
-//        dropTableService.dropAllTables();
-//
-//        DatabaseInitService initService = DatabaseServiceFactory.createDatabaseInitService(connectionManager, metricRegistry);
-//        initService.initializeDatabase(INIT_DB_SQL);
-//
-//        DatabasePopulateService populateService = DatabaseServiceFactory.createDatabasePopulateService(connectionManager, metricRegistry);
-//        populateService.insertData(POPULATE_DB_SQL);
-//
-//        DatabaseQueryService queryService = DatabaseServiceFactory.createDatabaseQueryService(connectionManager, metricRegistry);
-//        queryService.findMaxSalaryWorker(FIND_MAX_SALARY_WORKER_SQL).ifPresent(workers -> {
-//            logger.info("MaxSalaryWorker(s) found: {}", workers.size());
-//            workers.forEach(worker -> logger.info(worker.toString()));
-//        });
-//
-//        queryService.findMaxProjectsClient(FIND_MAX_PROJECT_CLIENT_SQL).ifPresent(clients -> {
-//            logger.info("MaxProjectCountClient(s) found: {}", clients.size());
-//            clients.forEach(client -> logger.info(client.toString()));
-//        });
-//
-//        queryService.printProjectPrices(PRINT_PROJECT_PRICES_SQL).ifPresent(projects -> {
-//            logger.info("ProjectPriceInfo(s) found: {}", projects.size());
-//            projects.forEach(project -> logger.info(project.toString()));
-//        });
-//
-//        queryService.findLongestProject(FIND_LONGEST_PROJECT_SQL).ifPresent(projects -> {
-//            logger.info("LongestProject(s) found: {}", projects.size());
-//            projects.forEach(project -> logger.info(project.toString()));
-//        });
-//
-//        queryService.findYoungestEldestWorker(FIND_YOUNGEST_ELDEST_SQL).ifPresent(workers -> {
-//            logger.info("YoungestEldestWorker(s) found: {}", workers.size());
-//            workers.forEach(worker -> logger.info(worker.toString()));
-//        });
     }
 }
