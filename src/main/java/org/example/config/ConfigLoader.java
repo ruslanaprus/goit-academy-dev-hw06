@@ -1,6 +1,7 @@
 package org.example.config;
 
 import org.apache.commons.text.StringSubstitutor;
+import org.example.constants.DatabaseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,19 +59,15 @@ public class ConfigLoader {
         logger.info("Resolved placeholders in properties.");
     }
 
-    public String getProperty(String key) {
-        return properties.getProperty(key);
+    public String getDbUrl(DatabaseType dbType) {
+        return properties.getProperty(dbType.name().toLowerCase() + ".db.url");
     }
 
-    public String getDbUrl() {
-        return properties.getProperty("db.url");
+    public String getDbUser(DatabaseType dbType) {
+        return properties.getProperty(dbType.name().toLowerCase() + ".db.user");
     }
 
-    public String getDbUser() {
-        return properties.getProperty("db.user");
-    }
-
-    public String getDbPassword() {
-        return properties.getProperty("db.password");
+    public String getDbPassword(DatabaseType dbType) {
+        return properties.getProperty(dbType.name().toLowerCase() + ".db.password");
     }
 }

@@ -21,7 +21,7 @@ public class AppLauncher {
         MetricsLogger.startLogging(metricRegistry);
 
         // SQLite database setup
-        runDatabaseOperations(DatabaseType.SQLITE, metricRegistry);
+//        runDatabaseOperations(DatabaseType.SQLITE, metricRegistry);
 
         // Postgres database setup
         runDatabaseOperations(DatabaseType.POSTGRES, metricRegistry);

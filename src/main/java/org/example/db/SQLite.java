@@ -4,6 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.example.config.ConfigLoader;
+import org.example.constants.DatabaseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,7 @@ public class SQLite implements Database {
     public DataSource createDataSource(ConfigLoader configLoader) {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.sqlite.JDBC");
-        config.setJdbcUrl(configLoader.getDbUrl());
+        config.setJdbcUrl(configLoader.getDbUrl(DatabaseType.SQLITE));
 
         config.setMetricRegistry(this.metricRegistry);
 

@@ -4,6 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.example.config.ConfigLoader;
+import org.example.constants.DatabaseType;
 
 import javax.sql.DataSource;
 
@@ -17,9 +18,13 @@ public class Postgresql implements Database {
     @Override
     public DataSource createDataSource(ConfigLoader configLoader) {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(configLoader.getDbUrl());
-        if (configLoader.getDbUser() != null) { config.setUsername(configLoader.getDbUser()); }
-        if (configLoader.getDbPassword() != null) { config.setPassword(configLoader.getDbPassword()); }
+        config.setJdbcUrl(configLoader.getDbUrl(DatabaseType.POSTGRES));
+        if (configLoader.getDbUser(DatabaseType.POSTGRES) != null) {
+            config.setUsername(configLoader.getDbUser(DatabaseType.POSTGRES));
+        }
+        if (configLoader.getDbPassword(DatabaseType.POSTGRES) != null) {
+            config.setPassword(configLoader.getDbPassword(DatabaseType.POSTGRES));
+        }
 
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
